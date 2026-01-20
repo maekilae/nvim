@@ -1,0 +1,56 @@
+{
+  "plugins": {
+    "blink.cmp": {
+      "rev": "820f1ddf634ec267412e403711bf74be26cac677",
+      "src": "https://github.com/saghen/blink.cmp"
+    },
+    "friendly-snippets": {
+      "rev": "572f5660cf05f8cd8834e096d7b4c921ba18e175",
+      "src": "https://github.com/rafamadriz/friendly-snippets"
+    },
+    "mason": {
+      "rev": "44d1e90e1f66e077268191e3ee9d2ac97cc18e65",
+      "src": "https://github.com/mason-org/mason.nvim"
+    },
+    "mason-lspconfig": {
+      "rev": "80c0130c5f16b551865a69e832f1feadeedb5fbe",
+      "src": "https://github.com/mason-org/mason-lspconfig.nvim"
+    },
+    "mason-lspconfig.nvim": {
+      "rev": "80c0130c5f16b551865a69e832f1feadeedb5fbe",
+      "src": "https://github.com/mason-org/mason-lspconfig.nvim"
+    },
+    "mason.nvim": {
+      "rev": "44d1e90e1f66e077268191e3ee9d2ac97cc18e65",
+      "src": "https://github.com/mason-org/mason.nvim"
+    },
+    "nvim-lspconfig": {
+      "rev": "92ee7d42320edfbb81f3cad851314ab197fa324a",
+      "src": "https://github.com/neovim/nvim-lspconfig"
+    },
+    "nvim-treesitter": {
+      "rev": "e75c007f2747050c2c620dc862c77b8f242551a8",
+      "src": "https://github.com/nvim-treesitter/nvim-treesitter"
+    },
+    "plenary.nvim": {
+      "rev": "b9fd5226c2f76c951fc8ed5923d85e4de065e509",
+      "src": "https://github.com/nvim-lua/plenary.nvim"
+    },
+    "telescope-fzf-native.nvim": {
+      "rev": "6fea601bd2b694c6f2ae08a6c6fab14930c60e2c",
+      "src": "https://github.com/nvim-telescope/telescope-fzf-native.nvim"
+    },
+    "telescope.nvim": {
+      "rev": "0d8b6eaa0b5ae6bb3d9785f7a3ba4a4c6c1b1af2",
+      "src": "https://github.com/nvim-telescope/telescope.nvim"
+    },
+    "vague.nvim": {
+      "rev": "fcc283576764474ccfbbcca240797d5d7f4d8a78",
+      "src": "https://github.com/vague-theme/vague.nvim"
+    },
+    "yazi.nvim": {
+      "rev": "5634692fab930cb3ef8359760a11418b2d4d2d85",
+      "src": "https://github.com/mikavilpas/yazi.nvim"
+    }
+  }
+}
