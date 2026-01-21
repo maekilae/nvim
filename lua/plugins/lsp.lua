@@ -2,14 +2,18 @@ return {
 	{
 		'https://github.com/nvim-treesitter/nvim-treesitter',
 		build = ':TSUpdate',
+		opts = {
+			auto_install = true,
+		},
 
 		config = function()
-			vim.lsp.enable({ "luals" })
+			vim.lsp.enable({ "lua_ls", "gopls" })
+			require'nvim-treesitter'.install { 'rust', 'javascript', 'zig' }
 		end,
 	},
 	{
 		"mason-org/mason.nvim",
-		name = "mason",
+		as = "mason",
 		tag = "*",
 		build = ":MasonUpdate",
 		opts = {
@@ -20,7 +24,7 @@ return {
 					package_uninstalled = "✗"
 				}
 			},
-			ensure_installed = { "lua_ls", "rust_analyzer" },
+			ensure_installed = { "lua_ls", "rust_analyzer", "gopls" },
 		},
 	},
 
@@ -31,6 +35,7 @@ return {
 		deps = {
 			{
 				"neovim/nvim-lspconfig",
+				opts = {},
 				config = function()
 					vim.api.nvim_create_autocmd("LspAttach", {
 						group = vim.api.nvim_create_augroup("lsp", { clear = true }),
@@ -46,6 +51,17 @@ return {
 							})
 						end
 					})
+					vim.diagnostic.config({
+						underline = true,
+						update_in_insert = false,
+						virtual_text = {
+							spacing = 4,
+							source = "if_many",
+							prefix = "●",
+						},
+						severity_sort = true,
+					})
+					vim.lsp.inlay_hint.enable(true)
 				end
 			},
 		},

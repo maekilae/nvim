@@ -1,9 +1,36 @@
+local function insert_plugin(tabl, plugin)
+	table.insert(tabl, {
+		src = plugin.src,
+		as = plugin.as or plugin.name or nil,
+		version = (plugin.tag and plugin.tag ~= "*") and plugin.tag or nil,
+		data = {
+			build = plugin.build,
+		},
+		opts = plugin.opts,
+		keys = plugin.keys,
+		config = plugin.config
+	})
+end
+local function merge_tables(a, b)
+	local result = {}
+
+	for k, v in pairs(a) do
+		result[k] = v
+	end
+
+	for k, v in pairs(b) do
+		result[k] = v
+	end
+
+	return result
+end
+
 -- 1. Hook for builds
 vim.api.nvim_create_autocmd('PackChanged', {
 	callback = function(ev)
 		local spec = ev.data.spec
 		if (ev.data.kind == 'install' or ev.data.kind == 'update') and spec.data and spec.data.build then
-			print("Building: " .. spec.name)
+			print("Building: " .. spec.as)
 			vim.system({ spec.data.build }, { cwd = ev.data.path })
 		end
 	end
@@ -24,33 +51,32 @@ local function parse_and_collect(plugins)
 	    and { plugins }
 	    or plugins
 
-	for _, p in ipairs(list) do
-		local spec = type(p) == "string" and { src = p } or p
-		local src = spec.src or spec[1]
+	for _, plugin in ipairs(list) do
+		local src = type(plugin) == "string" and { src = plugin } or plugin
+		plugin.src = src.src or src[1]
+		if not plugin.priority then
+			plugin.priority = 100
+		end
 
-		if src and not seen_plugins[src] then
-			seen_plugins[src] = true -- Mark as handled
-			if not src:match("://") and not src:match("git@") then
-				src = "https://github.com/" .. src
+		if plugin.src and not seen_plugins[plugin.src] then
+			seen_plugins[plugin.src] = true -- Mark as handled
+			if not plugin.src:match("://") and not plugin.src:match("git@") then
+				plugin.src = "https://github.com/" .. plugin.src
 			end
 
-			if spec.deps and type(spec.deps) == "table" then
-				for _, d in pairs(spec.deps) do
+			if plugin.deps and type(plugin.deps) == "table" then
+				for _, d in pairs(plugin.deps) do
 					parse_and_collect(d)
 				end
 			end
-
-			table.insert(all_native_specs, {
-				src = src,
-				name = spec.name,
-				version = (spec.tag and spec.tag ~= "*") and spec.tag or nil,
-				data = {
-					build = spec.build,
-				},
-				opts = spec.opts,
-				keys = spec.keys,
-				config = spec.config
-			})
+			insert_plugin(all_native_specs, plugin)
+		elseif plugin.src then
+			local k = merge_tables(seen_plugins[plugin.src].keys, plugin.keys)
+			local o = merge_tables(seen_plugins[plugin.src].opts, plugin.opts)
+			local mp = merge_tables(seen_plugins[plugin.src], plugin)
+			mp.keys = k
+			mp.opts = o
+			insert_plugin(all_native_specs, mp)
 		end
 	end
 end
@@ -75,33 +101,53 @@ end
 
 -- 4. Final Add and Sync
 if #all_native_specs > 0 then
-	print("Adding " .. #all_native_specs .. " plugins via vim.pack") -- DEBUG
+	table.sort(all_native_specs, function(a, b)
+		-- Handle cases where priority might be missing (default to 0 or 999)
+		local prio_a = a.priority or 0
+		local prio_b = b.priority or 0
+
+		return prio_a > prio_b -- Returns true if 'a' should come before 'b'
+	end)
 	vim.pack.add(all_native_specs)
 end
+local function sync_plugin_names(tbl_a)
+	-- 1. Fetch all installed plugin data
+	local installed_plugins = vim.pack.get()
 
-for _, spec in pairs(all_native_specs) do
-	if spec.opts then
-		local clean_name = spec.src:match(".*/([^/]+)$"):gsub("%.git$", "")
+	-- 2. Iterate through your target table (Table A)
+	for _, entry in ipairs(tbl_a) do
+		-- 3. Iterate through installed plugins to find a source match
+		for _, info in pairs(installed_plugins) do
+			if entry.as ~= nil then
+				break
+			end
+			local installed_src = info.spec.src
 
-		local ok, mod = pcall(require, clean_name)
-
-		if not ok then
-			ok, mod = pcall(require, spec.name)
-		end
-
-		if ok and type(mod) == "table" and mod.setup then
-			mod.setup(spec.opts)
+			-- 4. If the source URLs match, update the name in Table A
+			if installed_src and installed_src == entry.src then
+				entry.as = info.spec.name
+				break -- Match found for this entry, move to next
+			end
 		end
 	end
+end
 
-	if type(spec.config) == "function" then
-		spec.config(spec, spec.opts or {})
+sync_plugin_names(all_native_specs)
+for _, plugin in pairs(all_native_specs) do
+	if plugin.config then
+		plugin.config()
+	end
+	-- vim.print(plugin.as)
+	local ok, mod = pcall(require, plugin.as)
+	if plugin.opts and ok then
+		mod.setup(plugin.opts)
+	end
+	if plugin.install and ok then
+		mod.install(plugin.install)
 	end
 end
 
 local function apply_keymaps()
-	local wk_ok, wk = pcall(require, "which-key")
-
 	for _, plugin in ipairs(all_native_specs) do
 		if plugin.keys then
 			for _, key in ipairs(plugin.keys) do
