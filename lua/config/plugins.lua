@@ -1,3 +1,5 @@
+local installed_plugins = vim.pack.get()
+
 local function insert_plugin(tabl, plugin)
 	table.insert(tabl, {
 		src = plugin.src,
@@ -112,7 +114,6 @@ if #all_native_specs > 0 then
 end
 local function sync_plugin_names(tbl_a)
 	-- 1. Fetch all installed plugin data
-	local installed_plugins = vim.pack.get()
 
 	-- 2. Iterate through your target table (Table A)
 	for _, entry in ipairs(tbl_a) do
@@ -145,19 +146,12 @@ for _, plugin in pairs(all_native_specs) do
 	if plugin.install and ok then
 		mod.install(plugin.install)
 	end
-end
+	if plugin.keys then
+		for _, key in ipairs(plugin.keys) do
+			local lhs, rhs = key[1], key[2]
+			local mode = key.mode or "n"
 
-local function apply_keymaps()
-	for _, plugin in ipairs(all_native_specs) do
-		if plugin.keys then
-			for _, key in ipairs(plugin.keys) do
-				local lhs, rhs = key[1], key[2]
-				local mode = key.mode or "n"
-
-				vim.keymap.set(mode, lhs, rhs, { desc = key.desc })
-			end
+			vim.keymap.set(mode, lhs, rhs, { desc = key.desc })
 		end
 	end
 end
-
-apply_keymaps()
