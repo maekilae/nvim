@@ -8,64 +8,36 @@ return {
 
 		config = function()
 			vim.lsp.enable({ "lua_ls", "gopls" })
-			require'nvim-treesitter'.install { 'rust', 'javascript', 'zig' }
+			require 'nvim-treesitter'.install { 'rust', 'javascript', 'zig' }
 		end,
 	},
+
 	{
-		"mason-org/mason.nvim",
-		as = "mason",
-		tag = "*",
-		build = ":MasonUpdate",
-		opts = {
-			ui = {
-				icons = {
-					package_installed = "✓",
-					package_pending = "➜",
-					package_uninstalled = "✗"
-				}
-			},
-			ensure_installed = { "lua_ls", "rust_analyzer", "gopls" },
-		},
+		"neovim/nvim-lspconfig",
+		opts = {},
+		config = function()
+			vim.diagnostic.config({
+				underline = true,
+				update_in_insert = false,
+				virtual_text = {
+					spacing = 4,
+					source = "if_many",
+					prefix = "●",
+				},
+				severity_sort = true,
+			})
+			vim.lsp.inlay_hint.enable(true)
+		end
 	},
 
 	{
 		"mason-org/mason-lspconfig.nvim",
 		name = "mason-lspconfig",
-		tag = "*",
-		deps = {
-			{
-				"neovim/nvim-lspconfig",
-				opts = {},
-				config = function()
-					vim.api.nvim_create_autocmd("LspAttach", {
-						group = vim.api.nvim_create_augroup("lsp", { clear = true }),
-						callback = function(args)
-							-- 2
-							vim.api.nvim_create_autocmd("BufWritePre", {
-								-- 3
-								buffer = args.buf,
-								callback = function()
-									-- 4 + 5
-									vim.lsp.buf.format { async = false, id = args.data.client_id }
-								end,
-							})
-						end
-					})
-					vim.diagnostic.config({
-						underline = true,
-						update_in_insert = false,
-						virtual_text = {
-							spacing = 4,
-							source = "if_many",
-							prefix = "●",
-						},
-						severity_sort = true,
-					})
-					vim.lsp.inlay_hint.enable(true)
-				end
-			},
+		dependencies = {
+			{ "mason-org/mason.nvim", opts = {} },
 		},
 		opts = {
+			ensure_installed = { "lua_ls", "rust_analyzer", "gopls" },
 		}
 	},
 	{
@@ -73,11 +45,16 @@ return {
 		-- optional: provides snippets for the snippet source
 		enabled = true,
 		build = 'cargo build --release',
-		tag = "*",
-		deps = { { 'rafamadriz/friendly-snippets' } },
+		dependencies = {
+			{
+				"L3MON4D3/LuaSnip",
+				-- follow latest release.
+				version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
+				-- install jsregexp (optional!).
+				build = "make install_jsregexp"
+			}
+		},
 
-		---@module 'blink.cmp'
-		---@type blink.cmp.Config
 		opts = {
 			keymap = { preset = 'enter' },
 
@@ -96,7 +73,7 @@ return {
 				default = { 'lsp', 'path', 'snippets', 'buffer' },
 			},
 
-			fuzzy = { implementation = "lua" }
+			fuzzy = { implementation = "rust" }
 		},
 	}
 }

@@ -1,12 +1,10 @@
 return {
 	{
 		'nvim-mini/mini.pairs',
-		tag = '*',
 		opts = {}
 	},
 	{
 		'nvim-mini/mini.surround',
-		tag = '*',
 		opts = {
 			mappings = {
 				add = "gsa", -- Add surrounding in Normal and Visual modes
@@ -21,7 +19,6 @@ return {
 	},
 	{
 		"nvim-mini/mini.comment",
-		tag = '*',
 		opts = {
 			-- Options which control module behavior
 			options = {
