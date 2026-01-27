@@ -55,7 +55,7 @@ return {
 					{
 						pane = 2,
 						section = "terminal",
-						cmd = "/bin/colorscript -e square",
+						cmd = "/usr/local/bin/colorscript -e square",
 						height = 5,
 						padding = 1,
 					},
