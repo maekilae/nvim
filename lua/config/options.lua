@@ -38,15 +38,14 @@ vim.opt.signcolumn = "yes"                        -- Always show sign column
 vim.opt.showmatch = true                          -- Highlight matching brackets
 vim.opt.completeopt = "menuone,noinsert,noselect" -- Completion options
 vim.opt.showmode = false                          -- Don't show mode in command line
-vim.opt.pumheight = 10                            -- Popup menu height
-vim.opt.pumblend = 10                             -- Popup menu transparency
-vim.opt.winblend = 0                              -- Floating window transparency
-vim.opt.conceallevel = 0                          -- Don't hide markup
-vim.opt.concealcursor = ""                        -- Show markup even on cursor line
-vim.opt.lazyredraw = false                        -- redraw while executing macros (butter UX)
-vim.opt.redrawtime = 10000                        -- Timeout for syntax highlighting redraw
-vim.opt.maxmempattern = 20000                     -- Max memory for pattern matching
-vim.opt.synmaxcol = 300                           -- Syntax highlighting column limit
+vim.opt.pumborder = "rounded"
+vim.opt.winborder = "single"
+vim.opt.conceallevel = 0      -- Don't hide markup
+vim.opt.concealcursor = ""    -- Show markup even on cursor line
+vim.opt.lazyredraw = false    -- redraw while executing macros (butter UX)
+vim.opt.redrawtime = 10000    -- Timeout for syntax highlighting redraw
+vim.opt.maxmempattern = 20000 -- Max memory for pattern matching
+vim.opt.synmaxcol = 300       -- Syntax highlighting column limit
 
 -- File Handling
 vim.opt.backup = false                       -- Don't create backup files
@@ -67,7 +66,7 @@ local undodir = "~/.local/share/nvim/undodir" -- Undo directory path
 vim.opt.undodir = vim.fn.expand(undodir)      -- Expand to full path
 local undodir_path = vim.fn.expand(undodir)
 if vim.fn.isdirectory(undodir_path) == 0 then
-  vim.fn.mkdir(undodir_path, "p") -- Create if not exists
+    vim.fn.mkdir(undodir_path, "p") -- Create if not exists
 end
 
 -- Behavior Settings
