@@ -1,45 +1,45 @@
 vim.api.nvim_create_autocmd("LspAttach", {
-  group = vim.api.nvim_create_augroup("lsp", { clear = true }),
-  callback = function(args)
-    -- 2
-    vim.api.nvim_create_autocmd("BufWritePre", {
-      -- 3
-      buffer = args.buf,
-      callback = function()
-        vim.lsp.buf.format({ bufnr = buffer, id = args.data.client_id })
-      end,
-    })
-  end
+    group = vim.api.nvim_create_augroup("lsp", { clear = true }),
+    callback = function(args)
+        -- 2
+        vim.api.nvim_create_autocmd("BufWritePre", {
+            buffer = args.buf,
+            callback = function()
+                vim.lsp.buf.format({ bufnr = args.buf, id = args.data.client_id })
+                -- require("conform").format({ bufnr = args.buf })
+            end,
+        })
+    end
 })
 
 vim.api.nvim_create_autocmd('TextYankPost', {
-  desc = 'Highlight when yanking (copying) text',
-  group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
-  callback = function()
-    vim.highlight.on_yank()
-  end,
+    desc = 'Highlight when yanking (copying) text',
+    group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
+    callback = function()
+        vim.highlight.on_yank()
+    end,
 })
 
 -- restore cursor to file position in previous editing session
 vim.api.nvim_create_autocmd("BufReadPost", {
-  callback = function(args)
-    local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
-    local line_count = vim.api.nvim_buf_line_count(args.buf)
-    if mark[1] > 0 and mark[1] <= line_count then
-      vim.api.nvim_win_set_cursor(0, mark)
-      -- defer centering slightly so it's applied after render
-      vim.schedule(function()
-        vim.cmd("normal! zz")
-      end)
-    end
-  end,
+    callback = function(args)
+        local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
+        local line_count = vim.api.nvim_buf_line_count(args.buf)
+        if mark[1] > 0 and mark[1] <= line_count then
+            vim.api.nvim_win_set_cursor(0, mark)
+            -- defer centering slightly so it's applied after render
+            vim.schedule(function()
+                vim.cmd("normal! zz")
+            end)
+        end
+    end,
 })
 
 -- syntax highlighting for dotenv files
 vim.api.nvim_create_autocmd("BufRead", {
-  group = vim.api.nvim_create_augroup("dotenv_ft", { clear = true }),
-  pattern = { ".env", ".env.*" },
-  callback = function()
-    vim.bo.filetype = "dosini"
-  end,
+    group = vim.api.nvim_create_augroup("dotenv_ft", { clear = true }),
+    pattern = { ".env", ".env.*" },
+    callback = function()
+        vim.bo.filetype = "dosini"
+    end,
 })

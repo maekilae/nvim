@@ -62,7 +62,16 @@ return {
         "mason-org/mason-lspconfig.nvim",
         name = "mason-lspconfig",
         dependencies = {
-            { "mason-org/mason.nvim", opts = {} },
+            {
+                "mason-org/mason.nvim",
+                opts = {
+                    ensure_installed = {
+                        "typescript-language-server",
+                        "tailwindcss-language-server",
+                        "eslint-lsp",
+                    }
+                }
+            },
         },
         opts = {
             ensure_installed = { "lua_ls", "rust_analyzer", "gopls" },
