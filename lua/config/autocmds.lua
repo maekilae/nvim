@@ -5,8 +5,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
         vim.api.nvim_create_autocmd("BufWritePre", {
             buffer = args.buf,
             callback = function()
-                vim.lsp.buf.format({ bufnr = args.buf, id = args.data.client_id })
-                -- require("conform").format({ bufnr = args.buf })
+                -- vim.lsp.buf.format({ bufnr = args.buf, id = args.data.client_id })
+                require("conform").format({ bufnr = args.buf })
             end,
         })
     end
